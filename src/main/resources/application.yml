@@ -18,8 +18,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: foodconnecttech@gmail.com
-    password: hvvt kian qmri nkxw
+    username: a
+    password: b
     properties:
       mail:
         smtp:

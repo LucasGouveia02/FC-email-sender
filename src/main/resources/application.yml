@@ -16,10 +16,6 @@ spring:
     timeout: 60000
 
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: a
-    password: b
     properties:
       mail:
         smtp:

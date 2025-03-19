@@ -1,10 +1,14 @@
 package com.br.foodconnect.service;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Service
 public class EmailService {
@@ -12,8 +16,18 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    @Value("${spring.mail.username}")
-    private String sender;
+    Dotenv dotenv = Dotenv.configure()
+            .directory("env/local")
+            .filename("env.conf")
+            .load();
+
+    String usernamePath = dotenv.get("GMAIL_USERNAME");
+    String username = new String(Files.readAllBytes(Paths.get(usernamePath)));
+
+    private final String sender = username;
+
+    public EmailService() throws IOException {
+    }
 
     public void sendConfirmationEmail(String receiverEmail, String confirmationCode) {
         SimpleMailMessage message = new SimpleMailMessage();

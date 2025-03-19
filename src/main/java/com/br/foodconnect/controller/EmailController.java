@@ -26,9 +26,16 @@ public class EmailController {
     @PostMapping
     public ResponseEntity<String> sendValidationCode(@RequestParam String email) {
         String code = generateCodeService.generateRandomCode();
-        redisService.saveValidationCode(email, code, 10);
-        emailService.sendConfirmationEmail(email, code);
-        return ResponseEntity.status(201)
-                .body(String.format("Confirmation code send to %s with the code %s", email, code));
+
+        try {
+            emailService.sendConfirmationEmail(email, code);
+            redisService.saveValidationCode(email, code, 10);
+
+            return ResponseEntity.status(201)
+                    .body(String.format("Confirmation code send to %s with the code %s", email, code));
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body("Failed to send email and save the validation code. Please try again.");
+        }
     }
 }

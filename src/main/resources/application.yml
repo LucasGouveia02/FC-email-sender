@@ -16,10 +16,10 @@ spring:
     timeout: 60000
 
   mail:
-    host: smtp.office365.com
+    host: smtp.gmail.com
     port: 587
-    username: sender-email-here
-    password: password-here
+    username: foodconnecttech@gmail.com
+    password: hvvt kian qmri nkxw
     properties:
       mail:
         smtp:

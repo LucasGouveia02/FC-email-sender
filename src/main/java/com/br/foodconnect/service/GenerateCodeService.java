@@ -10,6 +10,6 @@ public class GenerateCodeService {
     private final Random random = new Random();
 
     public String generateRandomCode() {
-        return String.format("%04d", random.nextInt(10000));
+        return String.format("%04d", random.nextInt(1000));
     }
 }

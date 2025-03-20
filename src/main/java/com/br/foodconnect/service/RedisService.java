@@ -4,6 +4,7 @@ import com.br.foodconnect.util.JsonCacheData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -21,6 +22,8 @@ public class RedisService {
     }
 
     public void saveValidationCode(String email, String code, int expirationMinutes) {
+
+        // TODO: QUERY IN THE DATABASE TO VERIFY IF THE REQUEST EMAIL DOES NOT EXISTS.
 
         JsonCacheData data = new JsonCacheData(email, code, expirationMinutes);
 
@@ -49,7 +52,7 @@ public class RedisService {
         }
     }
 
-    public void removeValidationCode(String email) {
+    public void clearCacheByKey(String email) {
         redisTemplate.delete(email);
     }
 

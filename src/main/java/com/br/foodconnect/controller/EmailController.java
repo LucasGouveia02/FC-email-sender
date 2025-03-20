@@ -1,5 +1,6 @@
 package com.br.foodconnect.controller;
 
+import com.br.foodconnect.repository.CustomerCredentialRepository;
 import com.br.foodconnect.service.EmailService;
 import com.br.foodconnect.service.GenerateCodeService;
 import com.br.foodconnect.service.RedisService;
@@ -23,13 +24,19 @@ public class EmailController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private CustomerCredentialRepository credentialRepository;
+
     @PostMapping
     public ResponseEntity<String> sendValidationCode(@RequestParam String email) {
-        String code = generateCodeService.generateRandomCode();
 
         try {
-            emailService.sendConfirmationEmail(email, code);
+            if (credentialRepository.emailExists(email)) {
+                return ResponseEntity.status(409).body("This email already exists.");
+            }
+            String code = generateCodeService.generateRandomCode();
             redisService.saveValidationCode(email, code, 10);
+            emailService.sendConfirmationEmail(email, code);
 
             return ResponseEntity.status(201)
                     .body(String.format("Confirmation code send to %s with the code %s", email, code));

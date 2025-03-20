@@ -1,10 +1,11 @@
 package com.br.foodconnect.service;
 
+import com.br.foodconnect.repository.CustomerCredentialRepository;
 import com.br.foodconnect.util.JsonCacheData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -12,6 +13,9 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class RedisService {
+
+    @Autowired
+    private CustomerCredentialRepository customerCredentialRepository;
 
     private final RedisTemplate<String, String> redisTemplate;
     private final ObjectMapper objectMapper;
@@ -21,9 +25,7 @@ public class RedisService {
         this.objectMapper = objectMapper;
     }
 
-    public void saveValidationCode(String email, String code, int expirationMinutes) {
-
-        // TODO: QUERY IN THE DATABASE TO VERIFY IF THE REQUEST EMAIL DOES NOT EXISTS.
+    public void saveValidationCode(String email, String code, int expirationMinutes) throws Exception {
 
         JsonCacheData data = new JsonCacheData(email, code, expirationMinutes);
 

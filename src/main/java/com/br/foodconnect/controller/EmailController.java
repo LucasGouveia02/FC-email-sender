@@ -39,13 +39,8 @@ public class EmailController {
             return ResponseEntity.status(201)
                     .body(String.format("Confirmation code send to %s with the code %s", email, code));
         } catch (Exception e) {
-            return ResponseEntity.status(500)
-                    .body("Failed to send email and save the validation code. Please try again.");
+                return ResponseEntity.status(400)
+                        .body("Failed to send email and save the validation code. Please try again.");
         }
-    }
-
-    @GetMapping("/teste")
-    public String ola() {
-        return "Greeting";
     }
 }

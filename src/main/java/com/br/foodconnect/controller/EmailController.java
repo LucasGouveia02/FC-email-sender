@@ -43,4 +43,20 @@ public class EmailController {
                         .body("Failed to send email and save the validation code. Please try again.");
         }
     }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> sendResetPasswordValidationCode(@RequestParam String email) {
+        try{
+            String code = generateCodeService.generateRandomCode();
+            redisService.saveValidationCode(email, code, 10);
+            emailService.sendConfirmationEmail(email, code);
+
+            return ResponseEntity.status(201)
+                    .body(String.format("Confirmation code send to %s.", email));
+        } catch (Exception e) {
+            return ResponseEntity.status(400)
+                    .body("Failed to send email and save the validation code. Please try again.");
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 spring:
   application:
     name: email-sender
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -8,3 +9,28 @@ spring:
     properties:
       hibernate:
         dialect: ${DB_DIALECT}
+
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 60000
+
+  mail:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connection timeout: 5000
+          timeout: 5000
+          write timeout:
+
+server:
+  port: ${PORT:8080}
+  address: 0.0.0.0
+#
+#server:
+#  address: 0.0.0.0
+#  port: ${PORT:8080}

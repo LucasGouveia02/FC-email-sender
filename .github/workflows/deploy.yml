@@ -53,7 +53,7 @@ jobs:
             sleep 10
 
             echo "Verificando se container de teste subiu corretamente..."
-            docker logs ${SERVICE_NAME}_test | grep -q "Started" || {
+            docker logs ${SERVICE_NAME}_test | grep -i "started" || {
               echo "Erro detectado! Salvando logs..."
               mkdir -p $LOG_DIR
               docker logs ${SERVICE_NAME}_test > $LOG_DIR/${SERVICE_NAME}_test-$(date +%Y%m%d-%H%M%S).log

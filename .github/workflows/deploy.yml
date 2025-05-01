@@ -22,6 +22,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no FoodConnect@4.201.144.173 '
             set -e
             PROJECT_DIR="/home/FoodConnect/foodconnect-backend"
+            DOCKER_COMPOSE_TEST="/home/FoodConnect"
             SERVICE_NAME="email-sender"
             TEST_IMAGE="${SERVICE_NAME}_test"
             LOG_DIR="$HOME/logs"
@@ -46,7 +47,7 @@ jobs:
             fi
 
             echo "Subindo container de teste com a nova imagem..."
-            docker compose -f $PROJECT_DIR/$SERVICE_NAME/docker-compose.test.yml up -d --build
+            docker compose -f $DOCKER_COMPOSE_TEST/docker-compose.test.yml up -d --build
 
             echo "Aguardando container iniciar..."
             sleep 10
@@ -56,7 +57,7 @@ jobs:
               echo "Erro detectado! Salvando logs..."
               mkdir -p $LOG_DIR
               docker logs ${SERVICE_NAME}_test > $LOG_DIR/${SERVICE_NAME}_test-$(date +%Y%m%d-%H%M%S).log
-              docker compose -f $PROJECT_DIR/$SERVICE_NAME/docker-compose.test.yml down
+              docker compose -f $DOCKER_COMPOSE_TEST/docker-compose.test.yml down
               echo "Abortando deploy."
               exit 1
             }
@@ -75,7 +76,7 @@ jobs:
             docker compose -f $PROJECT_DIR/docker-compose.yml up -d --build redis $SERVICE_NAME
 
             echo "Removendo container de teste..."
-            docker compose -f $PROJECT_DIR/$SERVICE_NAME/docker-compose.test.yml down || true
+            docker compose -f $DOCKER_COMPOSE_TEST/docker-compose.test.yml down || true
 
             echo "Deploy finalizado com sucesso!"
           '

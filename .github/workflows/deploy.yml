@@ -36,7 +36,10 @@ jobs:
             echo "Parando processo antigo da aplicação, se estiver rodando..."
             if pgrep -f "email-sender-0.0.1-SNAPSHOT.jar" > /dev/null; then
               echo "Processo antigo encontrado. Parando..."
-              pkill -f "email-sender-0.0.1-SNAPSHOT.jar"
+              sudo pkill -f "email-sender-0.0.1-SNAPSHOT.jar" || {
+                echo "Erro ao tentar parar o processo. Verifique se você tem permissão para isso."
+                exit 1
+              }
               echo "Processo antigo parado com sucesso."
             else
               echo "Nenhum processo antigo encontrado."

@@ -34,7 +34,13 @@ jobs:
             ./mvnw clean package -DskipTests
 
             echo "Parando processo antigo da aplicação, se estiver rodando..."
-            pkill -f "email-sender-0.0.1-SNAPSHOT.jar" || true
+            PID=$(pgrep -f "email-sender-0.0.1-SNAPSHOT.jar") || true
+            if [ -n "$PID" ]; then
+             kill "$PID"
+             echo "Processo antigo parado com sucesso."
+            else
+              echo "Nenhum processo antigo encontrado."
+            fi
 
             echo "Iniciando aplicação em segundo plano..."
             nohup java -jar $JAR_PATH > $LOG_DIR/email-sender.log 2>&1 &

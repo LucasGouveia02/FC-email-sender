@@ -22,62 +22,31 @@ jobs:
           ssh -o StrictHostKeyChecking=no FoodConnect@4.201.144.173 '
             set -e
 
-            PROJECT_DIR="/home/FoodConnect/foodconnect-backend"
-            DOCKER_COMPOSE_DIR="/home/FoodConnect"
-            SERVICE_NAME="email-sender"
-            TEST_IMAGE="${SERVICE_NAME}_test"
+            PROJECT_DIR="/home/FoodConnect/foodconnect-backend/email-sender"
             LOG_DIR="$HOME/logs"
-            CREDENTIALS_PATH="/home/FoodConnect/credentials"
-
-            cd $PROJECT_DIR/$SERVICE_NAME
+            JAR_NAME="email-sender.jar"
 
             echo "Atualizando código fonte..."
+            cd $PROJECT_DIR
             git pull origin main
 
-            echo "Atualizando jar da VM..."
+            echo "Compilando aplicação..."
             ./mvnw clean package -DskipTests
 
-            echo "Construindo imagem de teste..."
-            docker build -t $TEST_IMAGE .
+            echo "Parando processo antigo da aplicação, se estiver rodando..."
+            pkill -f "$JAR_NAME" || true
 
-            echo "Verificando container de teste rodando em 8089..."
-            TEST_CONTAINER_ID=$(docker ps -q -f publish=8089)
-            if [ ! -z "$TEST_CONTAINER_ID" ]; then
-              docker stop $TEST_CONTAINER_ID
-              docker rm -f $TEST_CONTAINER_ID
-            fi
+            echo "Copiando novo .jar..."
+            cp target/*.jar $JAR_NAME
 
-            echo "Subindo container de teste com a nova imagem..."
-            docker compose -f $DOCKER_COMPOSE_DIR/docker-compose.test.yml up -d --build
+            echo "Iniciando aplicação em segundo plano..."
+            nohup java -jar $JAR_NAME > $LOG_DIR/email-sender.log 2>&1 &
 
-            echo "Aguardando container iniciar..."
-            sleep 10
-
-            echo "Verificando se container de teste subiu corretamente..."
-            docker logs ${SERVICE_NAME}_test | grep -i "started" || {
-              echo "Erro detectado! Salvando logs..."
-              mkdir -p $LOG_DIR
-              docker logs ${SERVICE_NAME}_test > $LOG_DIR/${SERVICE_NAME}_test-$(date +%Y%m%d-%H%M%S).log
-              docker compose -f $DOCKER_COMPOSE_DIR/docker-compose.test.yml down
-              echo "Abortando deploy."
-              exit 1
+            echo "Verificando se Redis está rodando..."
+            docker ps | grep redis || {
+              echo "Redis não está rodando. Subindo Redis..."
+              docker compose -f /home/FoodConnect/docker-compose.yml up -d redis
             }
-
-            echo "Parando e removendo container antigo do docker-compose..."
-            cd $DOCKER_COMPOSE_DIR
-            docker compose stop $SERVICE_NAME || true
-            docker compose rm -f $SERVICE_NAME || true
-
-            echo "Atualizando imagem no docker-compose e subindo..."
-            docker tag $TEST_IMAGE $SERVICE_NAME
-            docker rmi $TEST_IMAGE || true
-
-            docker rm -f redis || true
-
-            docker compose -f $DOCKER_COMPOSE_DIR/docker-compose.yml up -d --build redis $SERVICE_NAME
-
-            echo "Removendo container de teste..."
-            docker compose -f $DOCKER_COMPOSE_DIR/docker-compose.test.yml down || true
 
             echo "Deploy finalizado com sucesso!"
           '

@@ -46,9 +46,7 @@ jobs:
             fi
 
             echo "Subindo container de teste com a nova imagem..."
-            docker run -d --name ${SERVICE_NAME}_test -p 8089:8080 \
-              -v $CREDENTIALS_PATH:/credentials:ro \
-              $TEST_IMAGE
+            docker compose -f $PROJECT_DIR/$SERVICE_NAME/docker-compose.test.yml up -d --build
 
             echo "Aguardando container iniciar..."
             sleep 10
@@ -58,7 +56,7 @@ jobs:
               echo "Erro detectado! Salvando logs..."
               mkdir -p $LOG_DIR
               docker logs ${SERVICE_NAME}_test > $LOG_DIR/${SERVICE_NAME}_test-$(date +%Y%m%d-%H%M%S).log
-              docker rm -f ${SERVICE_NAME}_test
+              docker compose -f $PROJECT_DIR/$SERVICE_NAME/docker-compose.test.yml down
               echo "Abortando deploy."
               exit 1
             }
@@ -74,10 +72,10 @@ jobs:
 
             docker rm -f redis
 
-            docker compose up -d --build redis $SERVICE_NAME
+            docker compose -f $PROJECT_DIR/docker-compose.yml up -d --build redis $SERVICE_NAME
 
             echo "Removendo container de teste..."
-            docker rm -f ${SERVICE_NAME}_test || true
+            docker compose -f $PROJECT_DIR/$SERVICE_NAME/docker-compose.test.yml down || true
 
             echo "Deploy finalizado com sucesso!"
           '

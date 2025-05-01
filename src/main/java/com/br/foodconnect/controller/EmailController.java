@@ -41,7 +41,7 @@ public class EmailController {
                     .body(String.format("Confirmation code send to %s with the code %s", email, code));
         } catch (Exception e) {
                 return ResponseEntity.status(400)
-                        .body("Error {}" + e.getMessage());
+                        .body("Error: " + e.getMessage());
         }
     }
 

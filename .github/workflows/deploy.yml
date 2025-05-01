@@ -72,7 +72,9 @@ jobs:
             docker tag $TEST_IMAGE $SERVICE_NAME
             docker rmi $TEST_IMAGE || true
 
-            docker compose up -d --no-deps --build $SERVICE_NAME
+            docker rm -f redis
+
+            docker compose up -d --build redis $SERVICE_NAME
 
             echo "Removendo container de teste..."
             docker rm -f ${SERVICE_NAME}_test || true

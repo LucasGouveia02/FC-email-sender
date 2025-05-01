@@ -40,14 +40,15 @@ public class EmailController {
             return ResponseEntity.status(201)
                     .body(String.format("Confirmation code send to %s with the code %s", email, code));
         } catch (Exception e) {
-                return ResponseEntity.status(400)
-                        .body("Error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(400)
+                    .body("Error: " + e.getMessage());
         }
     }
 
     @PostMapping("/resetPassword")
     public ResponseEntity<String> sendResetPasswordValidationCode(@RequestParam String email) {
-        try{
+        try {
             String code = generateCodeService.generateRandomCode();
             redisService.saveValidationCode(email, code, 10);
             emailService.sendConfirmationEmail(email, code);

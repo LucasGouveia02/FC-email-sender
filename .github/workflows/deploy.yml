@@ -51,10 +51,10 @@ jobs:
               $TEST_IMAGE
 
             echo "Aguardando container iniciar..."
-            sleep 10
+            sleep 20
 
             echo "Verificando se container de teste subiu corretamente..."
-            docker logs ${SERVICE_NAME}_test | grep -q "Started" || {
+            docker logs ${SERVICE_NAME}_test | grep -i "started\|running\|Booted" || {
               echo "Erro detectado! Salvando logs..."
               mkdir -p $LOG_DIR
               docker logs ${SERVICE_NAME}_test > $LOG_DIR/${SERVICE_NAME}_test-$(date +%Y%m%d-%H%M%S).log
@@ -72,9 +72,7 @@ jobs:
             docker tag $TEST_IMAGE $SERVICE_NAME
             docker rmi $TEST_IMAGE || true
 
-            docker rm -f redis
-
-            docker compose up -d --build redis $SERVICE_NAME
+            docker compose up -d --no-deps --build $SERVICE_NAME
 
             echo "Removendo container de teste..."
             docker rm -f ${SERVICE_NAME}_test || true

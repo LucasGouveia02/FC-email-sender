@@ -11,7 +11,7 @@ spring:
         dialect: ${DB_DIALECT}
 
   redis:
-    host: redis
+    host: ${SPRING_REDIS_HOST:localhost}
     port: ${SPRING_REDIS_PORT:6379}
     timeout: 60000
 

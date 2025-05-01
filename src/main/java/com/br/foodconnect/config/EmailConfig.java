@@ -17,7 +17,7 @@ public class EmailConfig {
     @Bean
     public JavaMailSender javaMailSender() throws IOException {
         Dotenv dotenv = Dotenv.configure()
-                .directory("env/local")
+                .directory("env/cloud")
                 .filename("env.conf")
                 .load();
 

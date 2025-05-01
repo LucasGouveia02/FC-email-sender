@@ -20,7 +20,7 @@ public class EmailService {
     private JavaMailSender mailSender;
 
     Dotenv dotenv = Dotenv.configure()
-            .directory("env/local")
+            .directory("env/cloud")
             .filename("env.conf")
             .load();
 

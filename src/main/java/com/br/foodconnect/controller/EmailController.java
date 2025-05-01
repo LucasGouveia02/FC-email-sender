@@ -34,13 +34,14 @@ public class EmailController {
             }
             String code = generateCodeService.generateRandomCode();
             redisService.saveValidationCode(email, code, 10);
+            System.out.println("Redis ok. Code: " + code);
             emailService.sendConfirmationEmail(email, code);
 
             return ResponseEntity.status(201)
                     .body(String.format("Confirmation code send to %s with the code %s", email, code));
         } catch (Exception e) {
                 return ResponseEntity.status(400)
-                        .body("Failed to send email and save the validation code. Please try again.");
+                        .body("Error {}" + e.getMessage());
         }
     }
 

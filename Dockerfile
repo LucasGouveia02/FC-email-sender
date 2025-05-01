@@ -2,6 +2,9 @@ FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
+# Instala o netcat
+RUN apt-get update && apt-get install -y netcat && rm -rf /var/lib/apt/lists/*
+
 # Copia apenas o necessário inicialmente para cache eficiente
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./

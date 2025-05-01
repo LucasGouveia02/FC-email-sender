@@ -4,15 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-# Copia o script para o container
-COPY wait-for-redis.sh /wait-for-redis.sh
-
-# Torna o script executável
-RUN chmod +x /wait-for-redis.sh
-
-# Modifica o comando de inicialização para usar o script
-CMD ["/wait-for-redis.sh"]
-
 RUN ./mvnw clean package -DskipTests
 
 EXPOSE ${PORT}

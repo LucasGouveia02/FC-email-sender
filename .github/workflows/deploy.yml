@@ -34,9 +34,9 @@ jobs:
             ./mvnw clean package -DskipTests
 
             echo "Parando processo antigo da aplicação, se estiver rodando..."
-            PID=$(pgrep -f "email-sender-0.0.1-SNAPSHOT.jar") || true
-            if [ -n "$PID" ]; then
-              kill "$PID"
+            if pgrep -f "email-sender-0.0.1-SNAPSHOT.jar" > /dev/null; then
+              echo "Processo antigo encontrado. Parando..."
+              pkill -f "email-sender-0.0.1-SNAPSHOT.jar"
               echo "Processo antigo parado com sucesso."
             else
               echo "Nenhum processo antigo encontrado."

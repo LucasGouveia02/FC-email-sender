@@ -2,23 +2,31 @@ FROM eclipse-temurin:21-jdk
 
 WORKDIR /app
 
-COPY . .
+# Instala o netcat
+RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
-# Copia o script para o container
+# Copia apenas o necessário inicialmente para cache eficiente
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+
+# Baixa as dependências primeiro (melhora cache)
+RUN ./mvnw dependency:go-offline -B
+
+# Agora copia o restante do código
+COPY src ./src
 COPY wait-for-redis.sh /wait-for-redis.sh
 
 # Torna o script executável
 RUN chmod +x /wait-for-redis.sh
 
-# Modifica o comando de inicialização para usar o script
-CMD ["/wait-for-redis.sh"]
-
+# Constrói o projeto
 RUN ./mvnw clean package -DskipTests
 
-EXPOSE ${PORT}
+# Copie o JAR gerado para a imagem final
+RUN cp target/email-sender-0.0.1-SNAPSHOT.jar /app/email-sender.jar
 
-# Copie o JAR para o container
-COPY target/email-sender-0.0.1-SNAPSHOT.jar /app/email-sender.jar
+# Exponha a porta explicitamente (sem usar variável)
+EXPOSE 8080
 
-# Defina o comando para rodar o JAR
-ENTRYPOINT ["java", "-jar", "/app/email-sender.jar"]
+# Comando de inicialização que aguarda o Redis
+ENTRYPOINT ["/wait-for-redis.sh"]

@@ -34,12 +34,9 @@ jobs:
             ./mvnw clean package -DskipTests
 
             echo "Parando processo antigo da aplicação, se estiver rodando..."
-            if pgrep -f "email-sender-0.0.1-SNAPSHOT.jar" > /dev/null; then
-              echo "Processo antigo encontrado. Parando..."
-              sudo pkill -f "email-sender-0.0.1-SNAPSHOT.jar" || {
-                echo "Erro ao tentar parar o processo. Verifique se você tem permissão para isso."
-                exit 1
-              }
+            PID=$(pgrep -f "email-sender-0.0.1-SNAPSHOT.jar") || true
+            if [ -n "$PID" ]; then
+              sudo kill "$PID"
               echo "Processo antigo parado com sucesso."
             else
               echo "Nenhum processo antigo encontrado."

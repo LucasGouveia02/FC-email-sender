@@ -34,6 +34,7 @@ public class EmailController {
             }
             String code = generateCodeService.generateRandomCode();
             redisService.saveValidationCode(email, code, 10);
+            System.out.println("Redis ok. Code: " + code);
             emailService.sendConfirmationEmail(email, code);
 
             return ResponseEntity.status(201)
@@ -46,7 +47,7 @@ public class EmailController {
 
     @PostMapping("/resetPassword")
     public ResponseEntity<String> sendResetPasswordValidationCode(@RequestParam String email) {
-        try{
+        try {
             String code = generateCodeService.generateRandomCode();
             redisService.saveValidationCode(email, code, 10);
             emailService.sendConfirmationEmail(email, code);

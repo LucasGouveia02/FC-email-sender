@@ -20,7 +20,7 @@ public class EmailService {
     private JavaMailSender mailSender;
 
     Dotenv dotenv = Dotenv.configure()
-            .directory("env/local")
+            .directory("env/cloud")
             .filename("env.conf")
             .load();
 
@@ -37,6 +37,7 @@ public class EmailService {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
+        helper.setFrom(sender);
         helper.setTo(receiverEmail);
         helper.setSubject("FoodConnect - Account Activation");
 

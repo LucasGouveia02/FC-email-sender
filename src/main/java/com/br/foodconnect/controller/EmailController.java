@@ -30,7 +30,7 @@ public class EmailController {
 
         try {
             if (credentialRepository.emailExists(email)) {
-                return ResponseEntity.status(409).body("This email already exists.");
+                return ResponseEntity.status(409).body("Este e-mail já está em uso.");
             }
             String code = generateCodeService.generateRandomCode();
             redisService.saveValidationCode(email, code, 10);
@@ -38,11 +38,10 @@ public class EmailController {
             emailService.sendConfirmationEmail(email, code);
 
             return ResponseEntity.status(201)
-                    .body(String.format("Confirmation code send to %s with the code %s", email, code));
+                    .body(String.format("Código de validação %s enviado para o e-mail %s.", code, email));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(400)
-                    .body("Error: " + e.getMessage());
+                return ResponseEntity.status(400)
+                        .body("Falha ao enviar e-mail e salvar código de validação. Por favor, tente novamente.");
         }
     }
 
@@ -54,10 +53,10 @@ public class EmailController {
             emailService.sendConfirmationEmail(email, code);
 
             return ResponseEntity.status(201)
-                    .body(String.format("Confirmation code send to %s.", email));
+                    .body(String.format("Código de validação enviado para o e-mail %s.", email));
         } catch (Exception e) {
             return ResponseEntity.status(400)
-                    .body("Failed to send email and save the validation code. Please try again.");
+                    .body("Falha ao enviar e-mail e salvar código de validação. Por favor, tente novamente.");
         }
     }
 
